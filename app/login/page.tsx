@@ -4,6 +4,14 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import {
+  Container,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper
+} from '@mui/material';
 
 export default function LoginPage() {
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
@@ -30,33 +38,50 @@ export default function LoginPage() {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username or Email:</label>
-          <input
-            type="text"
+    <Container maxWidth="sm">
+      <Paper sx={{ p: 4, mt: 4 }}>
+        <Typography variant="h5" gutterBottom>
+          Login
+        </Typography>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+        >
+          <TextField
+            label="Username or Email"
+            variant="outlined"
             value={usernameOrEmail}
             onChange={(e) => setUsernameOrEmail(e.target.value)}
             required
           />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
+          <TextField
+            label="Password"
             type="password"
+            variant="outlined"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-      <div>
-        <button onClick={() => router.push('/register')}>Register</button>
-        <button onClick={() => router.push('/passforget')}>Forgot Password</button>
-      </div>
-    </div>
+          <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+            <Button type="submit" variant="contained" color="primary">
+              Login
+            </Button>
+            <Button
+              variant="text"
+              onClick={() => router.push('/register')}
+            >
+              Register
+            </Button>
+            <Button
+              variant="text"
+              onClick={() => router.push('/passforget')}
+            >
+              Forgot Password
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
   );
 }

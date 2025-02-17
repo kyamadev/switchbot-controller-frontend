@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { Container, Paper, Typography, TextField, Button, Box } from '@mui/material';
 
 export default function PassForgetPage() {
   const [email, setEmail] = useState('');
@@ -22,21 +23,32 @@ export default function PassForgetPage() {
   };
   
   return (
-    <div>
-      <h1>Reset Password</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label>
-          <input
+    <Container maxWidth="sm">
+      <Paper sx={{ p: 4, mt: 4 }}>
+        <Typography variant="h5" gutterBottom>
+          Reset Password
+        </Typography>
+        <Box
+          component="form"
+          sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+          onSubmit={handleSubmit}
+        >
+          <TextField
+            label="Email"
             type="email"
+            variant="outlined"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-        </div>
-        <button type="submit">Send Reset Email</button>
-      </form>
-      <button onClick={() => router.push('/login')}>Back to Login</button>
-    </div>
+          <Button type="submit" variant="contained" color="primary">
+            Send Reset Email
+          </Button>
+          <Button variant="text" onClick={() => router.push('/login')}>
+            Back to Login
+          </Button>
+        </Box>
+      </Paper>
+    </Container>
   );
 }

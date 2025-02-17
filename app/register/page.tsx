@@ -3,6 +3,14 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import {
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box
+} from '@mui/material';
 
 export default function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -23,39 +31,47 @@ export default function RegisterPage() {
   };
   
   return (
-    <div>
-      <h1>Register</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
+    <Container maxWidth="sm">
+      <Paper sx={{ p: 4, mt: 4 }}>
+        <Typography variant="h5" gutterBottom>
+          Register
+        </Typography>
+        <Box
+          component="form"
+          sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+          onSubmit={handleSubmit}
+        >
+          <TextField
+            label="Username"
+            variant="outlined"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
+          <TextField
+            label="Email"
             type="email"
+            variant="outlined"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
+          <TextField
+            label="Password"
             type="password"
+            variant="outlined"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-        </div>
-        <button type="submit">Register</button>
-      </form>
-      <button onClick={() => router.push('/login')}>Back to Login</button>
-    </div>
+          <Button type="submit" variant="contained" color="primary">
+            Register
+          </Button>
+          <Button variant="text" onClick={() => router.push('/login')}>
+            Back to Login
+          </Button>
+        </Box>
+      </Paper>
+    </Container>
   );
 }

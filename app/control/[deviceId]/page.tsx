@@ -4,6 +4,16 @@ import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import {
+  Container,
+  Typography,
+  Box,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  Paper
+} from '@mui/material';
 
 interface DeviceStatus {
   deviceMode?: string;
@@ -21,7 +31,7 @@ export default function DeviceControlPage() {
   const queryRemoteType = searchParams.get('remoteType') || '';
   //エアコン
   const [acTemp, setAcTemp] = useState(26);          // 温度
-  const [acMode, setAcMode] = useState(1);           // 0/1(auto),2(cool),3(dry),4(fan),5(heat)
+  const [acMode, setAcMode] = useState(1);           // 1(auto),2(cool),3(dry),4(fan),5(heat)
   const [acFan, setAcFan] = useState(1);            // 1(auto),2(low),3(medium),4(high)
   const [acPower, setAcPower] = useState('on');      // "on"/"off"
 
@@ -68,96 +78,146 @@ export default function DeviceControlPage() {
     const param = `${tvChannel}`;
     sendCommand('SetChannel', param);
   };
-  if (!status) return <div>Loading...</div>;
+  if (!status) return <Container><Typography>Loading...</Typography></Container>;
   // deviceType が "Bot" 以外のとき remoteType は本来 undefined のことが多い
   // SwitchBotの status API は "remoteType" を返さない場合もあるため、
   // 一覧からクエリで来た "queryRemoteType" と合体して判断
   const effectiveRemoteType = status.remoteType || queryRemoteType;
-
+  
   return (
-    <div>
-      <h1>Device Control: {deviceId}</h1>
+    <Container sx={{ py: 3 }}>
+      <Typography variant="h5" gutterBottom>
+        Device Control: {deviceId}
+      </Typography>
+      
       {status.deviceType === 'Bot' && (
-        <div>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="body1">Bot UI</Typography>
           {status.deviceMode === 'pressMode' ? (
-            <button onClick={() => sendCommand('press')}>Press</button>
+            <Button variant="contained" onClick={() => sendCommand('press')}>
+              Press
+            </Button>
           ) : (
-            <div>
-              <button onClick={() => sendCommand('turnOn')}>Turn On</button>
-              <button onClick={() => sendCommand('turnOff')}>Turn Off</button>
-            </div>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button variant="contained" onClick={() => sendCommand('turnOn')}>
+                Turn On
+              </Button>
+              <Button variant="contained" onClick={() => sendCommand('turnOff')}>
+                Turn Off
+              </Button>
+            </Box>
           )}
-        </div>
+        </Box>
       )}
+
       {effectiveRemoteType === 'TV' && (
-        <div style={{ marginTop: '1rem' }}>
-          <h2>TV Remote</h2>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <button onClick={() => sendCommand('turnOn')}>Power On</button>
-            <button onClick={() => sendCommand('turnOff')}>Power Off</button>
-            <button onClick={() => sendCommand('volumeAdd')}>Volume +</button>
-            <button onClick={() => sendCommand('volumeSub')}>Volume -</button>
-            <button onClick={() => sendCommand('channelAdd')}>Channel +</button>
-            <button onClick={() => sendCommand('channelSub')}>Channel -</button>
-          </div>
-          <div style={{ marginTop: '1rem' }}>
-            <label>Channel: </label>
-            <input
+        <Paper sx={{ p: 2, mb: 2 }}>
+          <Typography variant="body1">TV Remote</Typography>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 1 }}>
+            <Button variant="contained" onClick={() => sendCommand('turnOn')}>
+              Power On
+            </Button>
+            <Button variant="contained" onClick={() => sendCommand('turnOff')}>
+              Power Off
+            </Button>
+            <Button variant="contained" onClick={() => sendCommand('volumeAdd')}>
+              Volume +
+            </Button>
+            <Button variant="contained" onClick={() => sendCommand('volumeSub')}>
+              Volume -
+            </Button>
+            <Button variant="contained" onClick={() => sendCommand('channelAdd')}>
+              Channel +
+            </Button>
+            <Button variant="contained" onClick={() => sendCommand('channelSub')}>
+              Channel -
+            </Button>
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <TextField
+              label="Channel"
               type="number"
+              variant="outlined"
+              size="small"
               value={tvChannel}
               onChange={(e) => setTvChannel(Number(e.target.value))}
             />
-            <button onClick={handleSetChannel}>Set Channel</button>
-          </div>
-        </div>
+            <Button
+              variant="outlined"
+              sx={{ ml: 2 }}
+              onClick={handleSetChannel}
+            >
+              Set Channel
+            </Button>
+          </Box>
+        </Paper>
       )}
+
       {effectiveRemoteType === 'Air Conditioner' && (
-        <div style={{ marginTop: '1rem' }}>
-          <h2>Air Conditioner Remote</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxWidth: '300px' }}>
-            <label>
-              Temperature:
-              <input
-                type="number"
-                min={18}
-                max={30}
-                value={acTemp}
-                onChange={(e) => setAcTemp(Number(e.target.value))}
-              />
-            </label>
-            <label>
-              Mode:
-              <select value={acMode} onChange={(e) => setAcMode(Number(e.target.value))}>
-                <option value={1}>Auto</option>
-                <option value={2}>Cool</option>
-                <option value={3}>Dry</option>
-                <option value={4}>Fan</option>
-                <option value={5}>Heat</option>
-              </select>
-            </label>
-            <label>
-              Fan Speed:
-              <select value={acFan} onChange={(e) => setAcFan(Number(e.target.value))}>
-                <option value={1}>Auto(1)</option>
-                <option value={2}>Low(2)</option>
-                <option value={3}>Medium(3)</option>
-                <option value={4}>High(4)</option>
-              </select>
-            </label>
-            <label>
-              Power:
-              <select value={acPower} onChange={(e) => setAcPower(e.target.value)}>
-                <option value="on">On</option>
-                <option value="off">Off</option>
-              </select>
-            </label>
-            <button onClick={handleACSetAll}>SetAll</button>
-          </div>
-        </div>
+        <Paper sx={{ p: 2, mb: 2 }}>
+          <Typography variant="body1">Air Conditioner Remote</Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <TextField
+              label="Temperature"
+              type="number"
+              inputProps={{ min: 16, max: 30 }}
+              value={acTemp}
+              onChange={(e) => setAcTemp(Number(e.target.value))}
+            />
+            <Box>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Mode
+              </Typography>
+              <Select
+                size="small"
+                value={acMode}
+                onChange={(e) => setAcMode(e.target.value as number)}
+              >
+                <MenuItem value={1}>Auto</MenuItem>
+                <MenuItem value={2}>Cool</MenuItem>
+                <MenuItem value={3}>Dry</MenuItem>
+                <MenuItem value={4}>Fan</MenuItem>
+                <MenuItem value={5}>Heat</MenuItem>
+              </Select>
+            </Box>
+            <Box>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Fan Speed
+              </Typography>
+              <Select
+                size="small"
+                value={acFan}
+                onChange={(e) => setAcFan(e.target.value as number)}
+              >
+                <MenuItem value={1}>Auto</MenuItem>
+                <MenuItem value={2}>Low</MenuItem>
+                <MenuItem value={3}>Medium</MenuItem>
+                <MenuItem value={4}>High</MenuItem>
+              </Select>
+            </Box>
+            <Box>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Power
+              </Typography>
+              <Select
+                size="small"
+                value={acPower}
+                onChange={(e) => setAcPower(e.target.value as string)}
+              >
+                <MenuItem value="on">On</MenuItem>
+                <MenuItem value="off">Off</MenuItem>
+              </Select>
+            </Box>
+            <Button variant="contained" onClick={handleACSetAll}>
+              SetAll
+            </Button>
+          </Box>
+        </Paper>
       )}
+
       {!(status.deviceType === 'Bot' || effectiveRemoteType === 'TV' || effectiveRemoteType === 'Air Conditioner') && (
-        <p>未実装</p>
+        <Typography>未実装</Typography>
       )}
-    </div>
+    </Container>
   );
 }

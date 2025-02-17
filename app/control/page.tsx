@@ -4,7 +4,15 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-
+import {
+  Container,
+  Typography,
+  Card,
+  CardActionArea,
+  CardContent,
+  Button,
+  Grid
+} from '@mui/material';
 interface Device {
   deviceId: string;
   deviceName: string;
@@ -88,36 +96,47 @@ export default function ControlPage() {
   };
 
   return (
-    <div>
-      <h1>Device Control</h1>
-      <button onClick={handleLogout} style={{ marginBottom: '1rem' }}>
+    <Container sx={{ py: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        Device Control
+      </Typography>
+
+      <Button variant="outlined" sx={{ mb: 2 }} onClick={handleLogout}>
         Logout
-      </button>
+      </Button>
+
       {credentialMissing && (
         <div>
-          <p>SwitchBot credentials are not registered. Please register them.</p>
-          <button onClick={handleTokenRegister}>Register Credentials</button>
+          <Typography color="error" sx={{ mb: 2 }}>
+            SwitchBot credentials are not registered.
+          </Typography>
+          <Button variant="contained" onClick={handleTokenRegister}>
+            Register Credentials
+          </Button>
         </div>
       )}
-      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+
+      <Grid container spacing={2} sx={{ mt: 2 }}>
         {devices.map((device) => (
-          <div
-            key={device.deviceId}
-            style={{
-              border: '1px solid #ccc',
-              margin: '10px',
-              padding: '10px',
-              cursor: 'pointer',
-            }}
-            onClick={() =>
-              router.push(`/control/${device.deviceId}?remoteType=${device.remoteType || ''}`)
-            }
-          >
-            <h3>{device.deviceName}</h3>
-            <p>{device.deviceType}{device.remoteType ? ` / ${device.remoteType}` : ''}</p>
-          </div>
+          <Grid item xs={12} sm={6} md={4} key={device.deviceId}>
+            <Card>
+              <CardActionArea
+                onClick={() =>
+                  router.push(`/control/${device.deviceId}?remoteType=${device.remoteType || ''}`)
+                }
+              >
+                <CardContent>
+                  <Typography variant="h6">{device.deviceName}</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {device.deviceType}
+                    {device.remoteType && ` / ${device.remoteType}`}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Grid>
         ))}
-      </div>
-    </div>
+      </Grid>
+    </Container>
   );
 }
