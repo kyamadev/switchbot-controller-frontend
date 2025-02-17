@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import {
@@ -23,6 +23,7 @@ interface DeviceStatus {
 
 export default function DeviceControlPage() {
   const params = useParams();
+  const router = useRouter();
   const { deviceId } = params as { deviceId: string };
   const [status, setStatus] = useState<DeviceStatus | null>(null);
   const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -83,9 +84,14 @@ export default function DeviceControlPage() {
   // SwitchBotの status API は "remoteType" を返さない場合もあるため、
   // 一覧からクエリで来た "queryRemoteType" と合体して判断
   const effectiveRemoteType = status.remoteType || queryRemoteType;
-  
+
   return (
     <Container sx={{ py: 3 }}>
+      <Box sx={{ mb: 2 }}>
+        <Button variant="outlined" onClick={() => router.push('/control')}>
+          ←
+        </Button>
+      </Box>
       <Typography variant="h5" gutterBottom>
         Device Control: {deviceId}
       </Typography>
