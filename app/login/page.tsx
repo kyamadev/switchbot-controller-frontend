@@ -10,12 +10,14 @@ import {
   TextField,
   Button,
 } from '@mui/material';
+import { useAuthContext } from '@/app/context/AuthContext';
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState("");
+  const { setIsLoggedIn } = useAuthContext();
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -31,6 +33,7 @@ export default function LoginPage() {
       const { access, refresh } = data;
       Cookies.set('access', access);
       Cookies.set('refresh', refresh);
+      setIsLoggedIn(true);
       router.push('/control');
     } else {
       const data = await res.json();

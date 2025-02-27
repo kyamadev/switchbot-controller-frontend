@@ -101,19 +101,21 @@ export default function ControlPage() {
         Device Control
       </Typography>
 
-      <Button variant="outlined" sx={{ mb: 2 }} onClick={handleLogout}>
-        Logout
-      </Button>
-
       {credentialMissing && (
         <div>
           <Typography color="error" sx={{ mb: 2 }}>
             SwitchBot credentials are not registered.
           </Typography>
           <Button variant="contained" onClick={handleTokenRegister}>
-            Register Credentials
+            Register Token & Secret
           </Button>
         </div>
+      )}
+
+      {!credentialMissing && (
+      <Button variant="contained" onClick={handleTokenRegister}>
+        Update Token & Secret
+      </Button>
       )}
 
       <Grid container spacing={2} sx={{ mt: 2 }}>
