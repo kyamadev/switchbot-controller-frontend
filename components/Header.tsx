@@ -38,7 +38,7 @@ export default function Header() {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography sx={{ flexGrow: 1 }}>MyApp</Typography>
+        <Typography sx={{ flexGrow: 1 }}>Switchbot Controller</Typography>
         {isLoggedIn ? (
           <Button color="inherit" onClick={handleLogout}>
             Logout
