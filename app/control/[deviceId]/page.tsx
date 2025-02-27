@@ -34,7 +34,7 @@ export default function DeviceControlPage() {
   const [acTemp, setAcTemp] = useState(26);          // 温度
   const [acMode, setAcMode] = useState(1);           // 1(auto),2(cool),3(dry),4(fan),5(heat)
   const [acFan, setAcFan] = useState(1);            // 1(auto),2(low),3(medium),4(high)
-  const [acPower, setAcPower] = useState('on');      // "on"/"off"
+  const [acPower, setAcPower] = useState<'on'|'off'>('off');
 
   // TV
   const [tvChannel, setTvChannel] = useState(1);
@@ -68,10 +68,44 @@ export default function DeviceControlPage() {
     }
   };
 
-  const handleACSetAll = () => {
-    // "26,1,3,on"
-    const param = `${acTemp},${acMode},${acFan},${acPower}`;
+  const updateAC = (newTemp: number, newMode: number, newFan: number, newPower: 'on'|'off') => {
+    setAcTemp(newTemp);
+    setAcMode(newMode);
+    setAcFan(newFan);
+    setAcPower(newPower);
+
+    const param = `${newTemp},${newMode},${newFan},${newPower}`;
     sendCommand('setAll', param);
+  };
+
+  const handlePowerOn = () => {
+    updateAC(acTemp, acMode, acFan, 'on');
+  };
+  const handlePowerOff = () => {
+    updateAC(acTemp, acMode, acFan, 'off');
+  };
+
+  const handleTempUp = () => {
+    if (acTemp < 30 && acPower === 'on') {
+      updateAC(acTemp + 1, acMode, acFan, 'on');
+    }
+  };
+  const handleTempDown = () => {
+    if (acTemp > 16 && acPower === 'on') {
+      updateAC(acTemp - 1, acMode, acFan, 'on');
+    }
+  };
+
+  const handleModeChange = (value: number) => {
+    if (acPower === 'on') {
+      updateAC(acTemp, value, acFan, 'on');
+    }
+  };
+
+  const handleFanChange = (value: number) => {
+    if (acPower === 'on') {
+      updateAC(acTemp, acMode, value, 'on');
+    }
   };
 
   // TV チャンネル変更
@@ -159,64 +193,83 @@ export default function DeviceControlPage() {
         </Paper>
       )}
 
-      {effectiveRemoteType === 'Air Conditioner' && (
+{effectiveRemoteType === 'Air Conditioner' && (
         <Paper sx={{ p: 2, mb: 2 }}>
           <Typography variant="body1">Air Conditioner Remote</Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            <TextField
-              label="Temperature"
-              type="number"
-              inputProps={{ min: 16, max: 30 }}
-              value={acTemp}
-              onChange={(e) => setAcTemp(Number(e.target.value))}
-            />
-            <Box>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                Mode
-              </Typography>
-              <Select
-                size="small"
-                value={acMode}
-                onChange={(e) => setAcMode(e.target.value as number)}
-              >
-                <MenuItem value={1}>Auto</MenuItem>
-                <MenuItem value={2}>Cool</MenuItem>
-                <MenuItem value={3}>Dry</MenuItem>
-                <MenuItem value={4}>Fan</MenuItem>
-                <MenuItem value={5}>Heat</MenuItem>
-              </Select>
-            </Box>
-            <Box>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                Fan Speed
-              </Typography>
-              <Select
-                size="small"
-                value={acFan}
-                onChange={(e) => setAcFan(e.target.value as number)}
-              >
-                <MenuItem value={1}>Auto</MenuItem>
-                <MenuItem value={2}>Low</MenuItem>
-                <MenuItem value={3}>Medium</MenuItem>
-                <MenuItem value={4}>High</MenuItem>
-              </Select>
-            </Box>
-            <Box>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                Power
-              </Typography>
-              <Select
-                size="small"
-                value={acPower}
-                onChange={(e) => setAcPower(e.target.value as string)}
-              >
-                <MenuItem value="on">On</MenuItem>
-                <MenuItem value="off">Off</MenuItem>
-              </Select>
-            </Box>
-            <Button variant="contained" onClick={handleACSetAll}>
-              SetAll
+
+          <Box sx={{ mb: 1 }}>
+            <Typography variant="body2">
+              Power: {acPower.toUpperCase()}, Mode: {acMode}, Fan: {acFan}, Temp: {acTemp}℃
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+            <Button
+              variant="contained"
+              color={acPower === 'on' ? 'secondary' : 'primary'}
+              onClick={handlePowerOn}
+              disabled={acPower === 'on'}
+            >
+              Power On
             </Button>
+            <Button
+              variant="contained"
+              color={acPower === 'off' ? 'secondary' : 'primary'}
+              onClick={handlePowerOff}
+              disabled={acPower === 'off'}
+            >
+              Power Off
+            </Button>
+          </Box>
+
+          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={handleTempDown}
+              disabled={acPower === 'off'}
+            >
+              Temp -
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={handleTempUp}
+              disabled={acPower === 'off'}
+            >
+              Temp +
+            </Button>
+          </Box>
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+            <Typography variant="body2">Mode:</Typography>
+            <Select
+              size="small"
+              value={acMode}
+              onChange={(e) => handleModeChange(Number(e.target.value))}
+              disabled={acPower === 'off'}
+              sx={{ width: 120 }}
+            >
+              <MenuItem value={1}>Auto</MenuItem>
+              <MenuItem value={2}>Cool</MenuItem>
+              <MenuItem value={3}>Dry</MenuItem>
+              <MenuItem value={4}>Fan</MenuItem>
+              <MenuItem value={5}>Heat</MenuItem>
+            </Select>
+          </Box>
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Typography variant="body2">Fan Speed:</Typography>
+            <Select
+              size="small"
+              value={acFan}
+              onChange={(e) => handleFanChange(Number(e.target.value))}
+              disabled={acPower === 'off'}
+              sx={{ width: 120 }}
+            >
+              <MenuItem value={1}>Auto</MenuItem>
+              <MenuItem value={2}>Low</MenuItem>
+              <MenuItem value={3}>Medium</MenuItem>
+              <MenuItem value={4}>High</MenuItem>
+            </Select>
           </Box>
         </Paper>
       )}
