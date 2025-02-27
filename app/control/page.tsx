@@ -46,32 +46,7 @@ export default function ControlPage() {
       }
     };
     fetchDevices();
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      const refresh = Cookies.get('refresh');
-      const access = Cookies.get('access');
-      if (!refresh) {
-        // リフレッシュトークンが無い → 直接ログインへ遷移
-        Cookies.remove('access');
-        Cookies.remove('refresh');
-        router.push('/login');
-        return;
-      }
-      // /api/logout へ POST
-      await axios.post(baseURL+'/api/logout/', { refresh }, {
-        headers: { Authorization: `Bearer ${access}` },
-      });
-      // 成功したらクッキー削除 + /login 遷移
-      Cookies.remove('access');
-      Cookies.remove('refresh');
-      router.push('/login');
-    } catch (error) {
-      console.error(error);
-      alert("Failed to logout");
-    }
-  };
+  }, [baseURL]);
 
   const handleTokenRegister = async () => {
     const token = prompt("Enter your SwitchBot token:");

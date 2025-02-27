@@ -53,7 +53,7 @@ export default function DeviceControlPage() {
       }
     };
     fetchStatus();
-  }, [deviceId]);
+  }, [deviceId, baseURL]);
 
   const sendCommand = async (command: string, param?: string) => {
     try {
