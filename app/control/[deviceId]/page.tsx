@@ -61,7 +61,6 @@ export default function DeviceControlPage() {
       await axios.post(`${baseURL}/api/control/${deviceId}/${command}/`, param ? { param } : {}, {
         headers: { Authorization: `Bearer ${access}` },
       });
-      alert("Command sent");
     } catch (error) {
       console.error(error);
       alert("Failed to send command");

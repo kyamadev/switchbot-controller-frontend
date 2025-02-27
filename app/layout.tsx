@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Header from '../components/Header';
 import { AuthProvider } from '@/app/context/AuthContext';
+import CustomThemeProvider from '@/app/theme/ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'SwitchBot-Controller',
@@ -16,10 +17,12 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        <AuthProvider>
-          <Header/>
-          {children}
-        </AuthProvider>
+        <CustomThemeProvider>
+          <AuthProvider>
+            <Header/>
+            {children}
+          </AuthProvider>
+        </CustomThemeProvider>
       </body>
     </html>
   );
