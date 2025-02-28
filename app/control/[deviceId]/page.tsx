@@ -172,7 +172,7 @@ export default function DeviceControlPage() {
               Channel -
             </Button>
           </Box>
-          <Box sx={{ mt: 2 }}>
+          {/*<Box sx={{ mt: 2 }}>
             <TextField
               label="Channel"
               type="number"
@@ -188,7 +188,7 @@ export default function DeviceControlPage() {
             >
               Set Channel
             </Button>
-          </Box>
+          </Box>}*/}
         </Paper>
       )}
 
