@@ -13,6 +13,7 @@ import {
   Button,
   Grid
 } from '@mui/material';
+
 interface Device {
   deviceId: string;
   deviceName: string;
@@ -34,11 +35,17 @@ export default function ControlPage() {
           headers: { Authorization: `Bearer ${access}` },
         });
         setDevices(res.data.devices);
-      } catch (error: any) {
-        if (
-          error.response &&
-          error.response.data.detail === "SwitchBot credentials not registered."
-        ) {
+      } catch (error) {
+        if (error &&
+            typeof error === 'object' &&
+            'response' in error &&
+            error.response &&
+            typeof error.response === 'object' &&
+            'data' in error.response &&
+            error.response.data &&
+            typeof error.response.data === 'object' &&
+            'detail' in error.response.data &&
+            error.response.data.detail === "SwitchBot credentials not registered.") {
           setCredentialMissing(true);
         } else {
           console.error(error);
