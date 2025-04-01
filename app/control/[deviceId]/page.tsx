@@ -9,7 +9,7 @@ import {
   Typography,
   Box,
   Button,
-  TextField,
+  // TextField,
   Select,
   MenuItem,
   Paper
@@ -37,7 +37,7 @@ export default function DeviceControlPage() {
   const [acPower, setAcPower] = useState<'on'|'off'>('off');
 
   // TV
-  const [tvChannel, setTvChannel] = useState(1);
+  // const [tvChannel] = useState(1);
 
   useEffect(() => {
     if (!deviceId) return;
@@ -108,10 +108,10 @@ export default function DeviceControlPage() {
   };
 
   // TV チャンネル変更
-  const handleSetChannel = () => {
-    const param = `${tvChannel}`;
-    sendCommand('SetChannel', param);
-  };
+  // const handleSetChannel = () => {
+  //   const param = `${tvChannel}`;
+  //   sendCommand('SetChannel', param);
+  // };
   if (!status) return <Container><Typography>Loading...</Typography></Container>;
   // deviceType が "Bot" 以外のとき remoteType は本来 undefined のことが多い
   // SwitchBotの status API は "remoteType" を返さない場合もあるため、
