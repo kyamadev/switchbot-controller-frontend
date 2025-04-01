@@ -21,6 +21,18 @@ interface Device {
   remoteType?: string;
 }
 
+function isSwitchBotCredentialError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false;
+  
+  if (!('response' in error) || !error.response || typeof error.response !== 'object') return false;
+  
+  const response = error.response;
+  if (!('data' in response) || !response.data || typeof response.data !== 'object') return false;
+  
+  const data = response.data;
+  return 'detail' in data && data.detail === "SwitchBot credentials not registered.";
+}
+
 export default function ControlPage() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [credentialMissing, setCredentialMissing] = useState(false);
@@ -36,16 +48,7 @@ export default function ControlPage() {
         });
         setDevices(res.data.devices);
       } catch (error) {
-        if (error &&
-            typeof error === 'object' &&
-            'response' in error &&
-            error.response &&
-            typeof error.response === 'object' &&
-            'data' in error.response &&
-            error.response.data &&
-            typeof error.response.data === 'object' &&
-            'detail' in error.response.data &&
-            error.response.data.detail === "SwitchBot credentials not registered.") {
+        if (isSwitchBotCredentialError(error)) {
           setCredentialMissing(true);
         } else {
           console.error(error);
