@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { Container, Typography, Box, Button } from '@mui/material';
 import { useSnackbar } from '@/hooks/useSnackbar';
@@ -22,20 +22,20 @@ export default function DeviceControlPage() {
   const [status, setStatus] = useState<DeviceStatus | null>(null);
   const searchParams = useSearchParams();
   const queryRemoteType = searchParams.get('remoteType') || '';
-  const { showSnackbar, SnackbarComponent } = useSnackbar();
+  const { SnackbarComponent } = useSnackbar();
   const { loading, fetchDeviceStatus, sendCommand } = useSwitchbotApi();
 
-  useEffect(() => {
-    fetchDeviceData();
-  }, [deviceId]);
-
-  const fetchDeviceData = async () => {
+  const fetchDeviceData = useCallback(async () => {
     if (!deviceId) return;
     const deviceStatus = await fetchDeviceStatus(deviceId);
     if (deviceStatus) {
       setStatus(deviceStatus);
     }
-  };
+  }, [deviceId, fetchDeviceStatus]);
+
+  useEffect(() => {
+    fetchDeviceData();
+  }, [fetchDeviceData]);
 
   const handleCommand = async (command: string, param?: string) => {
     await sendCommand(deviceId, command, param);

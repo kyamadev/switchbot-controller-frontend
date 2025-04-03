@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Container,
@@ -30,11 +30,7 @@ export default function ControlPage() {
   const { loading, fetchDevices } = useSwitchbotApi();
   const { showSnackbar, SnackbarComponent } = useSnackbar();
 
-  useEffect(() => {
-    loadDevices();
-  }, []);
-
-  const loadDevices = async () => {
+  const loadDevices = useCallback(async () => {
     const devicesData = await fetchDevices();
     
     if (!devicesData) {
@@ -47,7 +43,11 @@ export default function ControlPage() {
     if (devicesData.length === 0) {
       showSnackbar('No devices found. Make sure your SwitchBot account has devices set up.', 'info');
     }
-  };
+  }, [fetchDevices, showSnackbar]);
+
+  useEffect(() => {
+    loadDevices();
+  }, [loadDevices]);
 
   const handleTokenRegister = async () => {
     const token = prompt("Enter your SwitchBot token:");
@@ -63,7 +63,7 @@ export default function ControlPage() {
       showSnackbar("SwitchBot credentials registered successfully", 'success');
       setCredentialMissing(false);
       loadDevices();
-    } catch (error) {
+    } catch {
       showSnackbar("Failed to register credentials", 'error');
     }
   };

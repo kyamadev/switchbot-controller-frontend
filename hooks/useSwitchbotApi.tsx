@@ -3,6 +3,23 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useSnackbar } from './useSnackbar';
 
+interface Device {
+  deviceId: string;
+  deviceName: string;
+  deviceType: string;
+  remoteType?: string;
+}
+
+interface DevicesResponse {
+  devices: Device[];
+}
+
+interface DeviceStatus {
+  deviceMode?: string;
+  deviceType?: string;
+  remoteType?: string;
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export function useSwitchbotApi() {
@@ -24,10 +41,10 @@ export function useSwitchbotApi() {
     return null;
   };
 
-  const fetchDevices = async () => {
+  const fetchDevices = async (): Promise<Device[] | null> => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_BASE_URL}/api/control/`, { headers: getHeaders() });
+      const res = await axios.get<DevicesResponse>(`${API_BASE_URL}/api/control/`, { headers: getHeaders() });
       return res.data.devices;
     } catch (error) {
       return handleError(error, 'Failed to fetch devices');
@@ -36,10 +53,10 @@ export function useSwitchbotApi() {
     }
   };
 
-  const fetchDeviceStatus = async (deviceId: string) => {
+  const fetchDeviceStatus = async (deviceId: string): Promise<DeviceStatus | null> => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_BASE_URL}/api/control/${deviceId}`, { headers: getHeaders() });
+      const res = await axios.get<DeviceStatus>(`${API_BASE_URL}/api/control/${deviceId}`, { headers: getHeaders() });
       return res.data;
     } catch (error) {
       return handleError(error, 'Failed to fetch device status');
