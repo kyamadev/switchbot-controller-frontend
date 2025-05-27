@@ -16,7 +16,7 @@
     "@types/nookies": "^1.1.0",
     "axios": "^1.8.2",
     "js-cookie": "^3.0.5",
-    "next": "^15.2.3",
+    "next": "^15.2.4",
     "nookies": "^2.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
